@@ -1,11 +1,15 @@
 package com.mukil.todo.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mukil.todo.bean.Todo;
+import com.mukil.todo.service.TodoService;
 
-import java.util.HashMap;
-import java.util.Collection;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -17,63 +21,53 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/v1/todo")
 public class TodoController{
 
-	private static HashMap<Integer,Todo> TODOS = new HashMap<>();
-	private static AtomicInteger atomicID = new AtomicInteger(1);
+	@Autowired
+	TodoService service;
 
 	@RequestMapping(value = "/populate", method = RequestMethod.GET)
-	public Collection<Todo> getAllTodos(@RequestParam(defaultValue = "5") int siz){
-		if(TODOS.size()==0){
-			for(int i =1;i<=siz;i++){
-				int id = atomicID.getAndIncrement();
-				Todo todo = new Todo("This is task "+i, "Description for "+i);
-				todo.setId(id);
-				TODOS.put(id,todo);
-			}
+	public ResponseEntity<List<Todo>> populateTodos(@RequestParam(defaultValue = "5") int siz){
+		for(int i =1 ; i<=siz; i++){
+			service.create(new Todo("Title "+i, "This is description for "+i));
 		}
-		return TODOS.values();
+		List<Todo> todos = service.getAllTodo();
+		return new ResponseEntity<List<Todo>>(todos, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
-	public Collection<Todo> getAllTodos(){
-		return TODOS.values();
+	public ResponseEntity<List<Todo>> getAllTodos(){
+		List<Todo> todos = service.getAllTodo();
+		return new ResponseEntity<List<Todo>>(todos, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public Todo getTodo(@PathVariable int id){
-		Todo todo = TODOS.get(id);
+	public ResponseEntity<Todo> getTodo(@PathVariable Long id){
+		Todo todo = service.getById(id);
 		if(todo == null){
 			throw new RuntimeException("No such todo found for id "+id);
 		}
-		return todo;
+		return new ResponseEntity<Todo>(todo, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "", method = RequestMethod.POST)
-	public Todo createTodo(@RequestBody Todo todo){
-		int id = atomicID.getAndIncrement();
-		todo.setId(id);
-		TODOS.put(id,todo);
-		return todo;
+	public ResponseEntity<Todo> createTodo(@RequestBody Todo todo){
+		todo = service.createOrUpdate(todo);
+		return new ResponseEntity<Todo>(todo, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public Todo updateTodo(@PathVariable int id,@RequestBody Todo todo){
-		Todo oldTodo = TODOS.get(id);
+	public ResponseEntity<Todo> updateTodo(@PathVariable Long id,@RequestBody Todo todo){
+		Todo oldTodo = service.getById(id);
 		if(oldTodo == null){
 			throw new RuntimeException("No such todo found for id "+id);
 		}
 		todo.setId(id);
-		TODOS.put(id,todo);
-		return todo;
+		todo = service.createOrUpdate(todo);
+		return new ResponseEntity<Todo>(todo, HttpStatus.OK);
 	}
 
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public Todo deleteTodo(@PathVariable int id){
-		Todo oldTodo = TODOS.get(id);
-		if(oldTodo == null){
-			throw new RuntimeException("No such todo found for id "+id);
-		}
-		TODOS.remove(id);
-		return oldTodo;
+	public void deleteTodo(@PathVariable Long id){
+		service.deleteById(id);
 	}
 }

@@ -15,6 +15,5 @@ mvn spring-boot:run
 - [Maven](https://maven.apache.org/) - build generation and dependency management 
 
 ### Roadmap
-- Need to save data into database.
 - Docker support
 - Need to implement webclient.
