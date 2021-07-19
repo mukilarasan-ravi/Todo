@@ -6,7 +6,7 @@
 ```
 git clone https://github.com/mukilarasan-ravi/Todo.git
 cd Todo
-./mvnw clean spring-boot:run
+mvn spring-boot:run
 ```
 
 ### Techstack
