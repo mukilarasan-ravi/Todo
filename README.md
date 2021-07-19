@@ -12,8 +12,10 @@ mvn spring-boot:run
 ### Techstack
 - [Java](https://www.java.com/en/) - backend language
 - [SpringBoot](https://spring.io/projects/spring-boot) - server 
-- [Maven](https://maven.apache.org/) - build generation and dependency management 
+- [Maven](https://maven.apache.org/) - build generation and dependency management
+- [Docker](https://www.docker.com/) - For container 
 
 ### Roadmap
-- Docker support
 - Need to implement webclient.
+- Need to add unit test
+- Need to support unit test in docker image.
