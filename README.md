@@ -16,6 +16,7 @@ mvn spring-boot:run
 - [Docker](https://www.docker.com/) - For container 
 
 ### Roadmap
+- CI/CD - docker publish
 - Need to implement webclient.
 - Need to add unit test
 - Need to support unit test in docker image.
